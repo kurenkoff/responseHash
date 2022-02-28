@@ -9,7 +9,7 @@ Arguments of CLI tool are URLs. Invalid urls will be skipped. No logging.
 ## Installation
 Execute:
 ```shell
-go install github.com/kurenkoff/responseHash
+go install github.com/kurenkoff/responseHash@latest
 ```
 
 ## Example
@@ -30,7 +30,7 @@ http://twitter.com 55a60e4dcbb5680fc1bc85f2ea0a74c4
 ## Tests
 Execute:
 ```shell
-go get github.com/kurenkoff/responseHash
-cd $GOPATH/src/github.com/kurenkoff/responseHash
-go test -race -cover ./...
+git clone https://github.com/kurenkoff/responseHash.git
+cd responseHash
+go test -race -cover ./.
 ```

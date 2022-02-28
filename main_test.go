@@ -198,7 +198,7 @@ func Test_worker(t *testing.T) {
 	wg.Add(1)
 	go worker(wg, input)
 
-	input <- ts.URL
+	input <- strings.ReplaceAll(ts.URL, "http://", "")
 
 	close(input)
 	wg.Wait()

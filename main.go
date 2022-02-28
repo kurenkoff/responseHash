@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
+	"strings"
 	"sync"
 )
 
@@ -15,15 +15,12 @@ func worker(wg *sync.WaitGroup, jobs chan string) {
 	defer wg.Done()
 
 	for address := range jobs {
-		uri, err := url.Parse(address)
-		if err != nil {
-			continue
-		}
-		if uri.Scheme == "" {
-			uri.Scheme = "http"
+		// workaround 127.0.0.1:45195. URL package can't parse this address
+		if !strings.Contains(address, "http://") {
+			address = "http://" + address
 		}
 
-		resp, err := http.Get(uri.String())
+		resp, err := http.Get(address)
 		if err != nil {
 			continue
 		}
@@ -34,7 +31,7 @@ func worker(wg *sync.WaitGroup, jobs chan string) {
 		}
 
 		hash := md5.Sum(body)
-		fmt.Printf("%s %s\n", uri.String(), hex.EncodeToString(hash[:]))
+		fmt.Printf("%s %s\n", address, hex.EncodeToString(hash[:]))
 	}
 }
 
