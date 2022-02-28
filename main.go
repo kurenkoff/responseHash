@@ -4,8 +4,8 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"flag"
+	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"sync"
@@ -17,7 +17,7 @@ func worker(wg *sync.WaitGroup, jobs chan string) {
 	for address := range jobs {
 		uri, err := url.Parse(address)
 		if err != nil {
-			log.Println(err)
+			continue
 		}
 		if uri.Scheme == "" {
 			uri.Scheme = "http"
@@ -25,18 +25,16 @@ func worker(wg *sync.WaitGroup, jobs chan string) {
 
 		resp, err := http.Get(uri.String())
 		if err != nil {
-			log.Printf("failed to make request to %s, error: %s\n", uri.String(), err)
 			continue
 		}
 
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
-			log.Printf("failed to process response body. URL: %s, error: %s\n", uri.String(), err)
 			continue
 		}
 
 		hash := md5.Sum(body)
-		log.Printf("%s %s\n", uri.String(), hex.EncodeToString(hash[:]))
+		fmt.Printf("%s %s\n", uri.String(), hex.EncodeToString(hash[:]))
 	}
 }
 
@@ -58,8 +56,12 @@ func processTasks(concurrencyLimit int, urls []string) {
 }
 
 func main() {
-	concurrencyLimit := flag.Int("parallel", 10, "")
+	concurrencyLimit := flag.Int("parallel", 10, "max number of parallel HTTP requests")
 	flag.Parse()
+
+	if *concurrencyLimit == 0 {
+		*concurrencyLimit = 1
+	}
 
 	processTasks(*concurrencyLimit, flag.Args())
 }
