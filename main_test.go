@@ -139,6 +139,8 @@ func Test_processTasks(t *testing.T) {
 				}
 			}
 
+			// not the best practice, but works in this case
+			// do not want to make complex project structure for easy testing
 			old := os.Stdout
 			r, w, _ := os.Pipe()
 			os.Stdout = w

@@ -56,11 +56,11 @@ func processTasks(concurrencyLimit int, urls []string) {
 }
 
 func main() {
-	concurrencyLimit := flag.Int("parallel", 10, "max number of parallel HTTP requests")
+	concurrencyLimit := flag.Int("parallel", 10, "max number of parallel HTTP requests. Min value is 1")
 	flag.Parse()
 
-	if *concurrencyLimit == 0 {
-		*concurrencyLimit = 1
+	if *concurrencyLimit < 1 {
+		*concurrencyLimit = 10
 	}
 
 	processTasks(*concurrencyLimit, flag.Args())
